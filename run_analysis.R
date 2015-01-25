@@ -13,7 +13,7 @@ unzip("./data/run_analysis.zip")
 
 
 # Setting up working directory
-setwd("C:/Users/Miah Alexa/Documents/Coursera - Data Science Specialization Track/Getting and Cleaning Data/Coursework/UCI HAR Dataset")
+setwd("~/Documents/Coursera - Data Science Specialization Track/Getting and Cleaning Data/Coursework/UCI HAR Dataset")
 
 # Dataset downloaded and unzipped. Folder name: UCI HAR Dataset
 # The purpose of this project is to collect, work with, and clean the given data set
@@ -191,7 +191,7 @@ tidy_data5 <-
 str(tidy_data5) # Classes 'grouped_dt' and 'data.frame':  180 obs. of  68 variables:
 View(tidy_data5)
 
-write.table(tidy_data5, "tidy_data5.txt", sep = " ", row.names = FALSE)
+write.table(tidy_data5, "tidy_data5.txt", sep = "\t", row.names = FALSE)
 
 # Read the data back to R
 check <- read.table("tidy_data5.txt", header = TRUE)
