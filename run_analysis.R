@@ -13,7 +13,7 @@ unzip("./data/run_analysis.zip")
 
 
 # Setting up working directory
-setwd("C:/Users/Miah Alexa/Documents/Coursera - Data Science Specialization Track/Getting and Cleaning Data/Coursework/UCI HAR Dataset")
+setwd("~/Documents/Coursera - Data Science Specialization Track/Getting and Cleaning Data/Coursework/UCI HAR Dataset")
 
 # Dataset downloaded and unzipped. Folder name: UCI HAR Dataset
 # The purpose of this project is to collect, work with, and clean the given data set
