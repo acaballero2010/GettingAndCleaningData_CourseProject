@@ -4,9 +4,9 @@
 - activity_labels  
 Links the class labels with their activity name.    
 - features  
-List of all features.   
-- subject_test 
-Each row identifies the subject who performed the activity for each window sample    
+List of all features.     
+- subject_test   
+Each row identifies the subject who performed the activity for each window sample      
 - x_test  
 Contains the test data set    
 - y_test  
