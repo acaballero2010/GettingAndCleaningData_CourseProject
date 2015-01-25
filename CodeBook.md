@@ -1,3 +1,4 @@
+# Code Book
 ###Description of data sets used in the analysis  
 activity_labels
 - Links the class labels with their activity name.  
