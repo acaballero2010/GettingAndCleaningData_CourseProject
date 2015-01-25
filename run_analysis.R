@@ -11,12 +11,16 @@ if (!file.exists("data")) {
 download.file(fileUrl, destfile = "./data/run_analysis.zip")
 unzip("./data/run_analysis.zip")
 
-# Dataset downloaded and unzipped. Folder name: UCI HAR Dataset
 
 # Setting up working directory
 setwd("C:/Users/Miah Alexa/Documents/Coursera - Data Science Specialization Track/Getting and Cleaning Data/Coursework/UCI HAR Dataset")
 
-# Data inspection by loading into R Studio
+# Dataset downloaded and unzipped. Folder name: UCI HAR Dataset
+# The purpose of this project is to collect, work with, and clean the given data set
+# The goal is to prepare a tidy data set that can be used for data analysis later
+
+
+# AFTER DATA INSPECTION WE CAN NOW LOAD THE REQUIRED DATA SETS INTO R STUDIO
 
 # Loading activity_labels and features
 # Links the class labels with their activity name.
@@ -27,7 +31,7 @@ str(activity_labels)
 features <- read.table("features.txt")
 str(features)
 
-# Loading test set data
+# LOADING THE TEST SET DATA
 # Each row identifies the subject who performed the activity for each window sample
 subject_test <- read.table("./test/subject_test.txt")
 str(subject_test)
@@ -40,7 +44,7 @@ str(x_test)
 y_test <- read.table("./test/y_test.txt")
 str(y_test)
 
-# Loading train set data
+# LOADING THE TRAIN SET DATA
 # Each row identifies the subject who performed the activity for each window sample
 subject_train <- read.table("./train/subject_train.txt")
 str(subject_train)
@@ -54,29 +58,32 @@ y_train <- read.table("./train/y_train.txt")
 str(y_train)
 
 # All the required datasets have been loaded. We can now proceed with the first task.
-# 1. Merges the training and the test sets to create one data set.
-# To do this, we can perform rbind for x_test and x_train. Both have 561 variables.
+# TASK 1 
+# Merges the training and the test sets to create one data set.
+# To do this, we can perform row bind for x_test and x_train. Both have 561 variables.
 
 one_set <- rbind(x_test, x_train)
 str(one_set) # 'data.frame':  2947 obs. of  561 variables
 
-# 2. Extracts only the measurements on the mean and standard deviation for each measurement.
-# To do this, we need to subset variables with mean() and std() only.
+# TASK 2
+# Extracts only the measurements on the mean and standard deviation for each measurement.
+# To do this, we need to subset variables that contain mean() and std()
 # However, since 'one_set' doesn't have variables names yet we need to get them from 'features'
 
 # Adding variable names to the dataset
 variable_names <- features[,2]
 names(one_set) <- variable_names
 
-# Checking duplicate variables/features
-duplicated(colnames(one_set)) # TRUE
+# Checking if there are duplicate variables/features
+duplicated(colnames(one_set)) # Returns TRUE on some instances
 
 # Removing duplicate variables
 tidy_data <- one_set[, !duplicated(colnames(one_set))]
 str(tidy_data) # 'data.frame':  10299 obs. of  477 variables
 
-# Extracting variable with mean() and std() only
+# Extracting variables with mean() and std() only
 library(stats)
+library(plyr)
 library(dplyr)
 library(tidyr)
 
@@ -92,19 +99,18 @@ head(std_data)
 
 # Binding the datasets to come up with one tidy dataset where only the measurements on the mean and standard deviation are presented
 
-final_tidy_data <- cbind(mean_data, std_data)
-head(final_tidy_data)
-str(final_tidy_data) # 'data.frame':  10299 obs. of  66 variables
+one_tidy_data <- cbind(mean_data, std_data)
+head(one_tidy_data)
+str(one_tidy_data) # 'data.frame':  10299 obs. of  66 variables
 
-# 3. Uses descriptive activity names to name the activities in the data set
+# TASK 3
+# Uses descriptive activity names to name the activities in the data set
 # To do this, we need appropriately match the activity labels to that of the train and test sets.
-# activity_labels  
-# y_test
-# y_train 
+# Required Datasets: activity_labels, y_test, y_train  
 
 # Test set - Activity labels
-merge <- list(y_test, activity_labels)
-merge_test_label <- join_all(merge)
+test_activity_label <- list(y_test, activity_labels)
+merge_test_label <- join_all(test_activity_label)
 
 # To check if rows are matching and if correct activity labels are attached.
 head(y_test, n=20)
@@ -113,8 +119,8 @@ tail(y_test, n=20)
 tail(merge_test_label, n=20)
 
 # Train set - Activity labels
-merge1 <- list(y_train, activity_labels)
-merge_train_label <- join_all(merge1)
+train_activity_label <- list(y_train, activity_labels)
+merge_train_label <- join_all(train_activity_label)
 
 # To check if rows are matching and if correct activity labels are attached.
 head(y_train, n=20)
@@ -122,11 +128,12 @@ head(merge_train_label, n=20)
 tail(y_train, n=20)
 tail(merge_train_label, n=20)
 
-# Binding activity labels. To match the order with the main dataset, test first then train.
+# Binding activity labels. To match the order with the main dataset, merge_test_label first then merge_train_label.
 one_activity_label <- rbind(merge_test_label, merge_train_label)
 str(one_activity_label) # 'data.frame':  10299 obs. of  2 variables
 
-# 4. Appropriately labels the data set with descriptive variable names.
+# TASK 4
+# Appropriately labels the data set with descriptive variable names.
 # To do this, we will attach activity labels and subject to the main dataset
 
 # Merging subject data
@@ -139,35 +146,56 @@ one_activity_label$V1 <- NULL
 str(one_activity_label) # 'data.frame':  10299 obs. of  1 variable
 
 
-# Putting it all together:
-# final_tidy_data, 'data.frame':  10299 obs. of  66 variables
+# PUTTING THEM ALL TOGETHER
+# one_tidy_data, 'data.frame':  10299 obs. of  66 variables
 # merge_subject, 'data.frame':  10299 obs. of  1 variable
 # one_activity_label, 'data.frame':  10299 obs. of  1 variable
 
 # Final dataset
 # Order: Subject, Activity Name, Activity Measurements
-final_data <- cbind(merge_subject, one_activity_label, final_tidy_data)
+final_tidy_data <- cbind(merge_subject, one_activity_label, one_tidy_data)
 str(final_data)
 
 
-# Adding appropriate variabl name, V1 = Subject, V2 = Activity Name
-colnames(final_data)[1:2] <- c("Subject", "Activity_Name")
-head(final_data)
+# Adding appropriate variable names, V1 = Subject, V2 = Activity Name
+colnames(final_tidy_data)[1:2] <- c("Subject", "Activity_Name")
+head(final_tidy_data)
+str(final_tidy_data)
+
+# REVIEW OF THE FINAL TIDY DATA SET
+# Requirements/checklist of a tidy data set
+# 1. Each variable forms a column <- TRUE
+# 2. Each observation forms a row <- TRUE
+# 3. Each table/file stores data about one kind of observation <- TRUE
+
+# Requirements/checklist based on the tasks provided
+# 1. Merges the test and training sets to create one data set <- TRUE
+# 2. Extracts on the measurements on the mean and standard deviation for each measurement. <- TRUE
+# 3. Uses decriptive activity names to name the activities in the data set <- TRUE
+# 4. Appropriately labels the data set with descriptive in the data set <- TRUE
+
+# Final tidy data set description
+# 1. 'data.frame':  10299 obs. of  68 variables
+# 2. Variable Names: Subject, Actvity_Name, Activity Measurements (66)
+
 
 # 5. From the data set in step 4, creates a second, independent tidy data set with the average of each variable for each activity and each subject.
 
-tidy_data1 <- 
-  tbl_dt(final_data) %>%
+tidy_data5 <- 
+  tbl_dt(final_tidy_data) %>%
   group_by(Subject, Activity_Name) %>%
   summarise_each(
     funs(mean)
     )
   
-str(data1)
-View(data1)
-head(data1)
+str(tidy_data5) # Classes 'grouped_dt' and 'data.frame':  180 obs. of  68 variables:
+View(tidy_data5)
 
-write.table(tidy_data1, "tidy_data1.txt", row.names = FALSE)
+write.table(tidy_data5, "tidy_data5.txt", sep = " ", row.names = FALSE)
 
-check <- read.table("tidy_data1.txt")
+# Read the data back to R
+check <- read.table("tidy_data5.txt", header = TRUE)
 View(check)
+str(check) 
+
+
